@@ -1,5 +1,6 @@
-using RecipeBook.Client.Pages;
+using Microsoft.EntityFrameworkCore;
 using RecipeBook.Components;
+using RecipeBook.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +8,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+// Database Context Dependency Injection
+// TODO: Should the connection string move to appsettings.json?
+var dbHost = Environment.GetEnvironmentVariable("DB_HOST");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+var dbPassword = Environment.GetEnvironmentVariable("DB_SA_PASSWORD");
+var connectionString = $"Data Source={dbHost};Initial Catalog={dbName};User ID=sa;Password={dbPassword}";
+builder.Services.AddDbContext<DataContext>(opt => opt.UseSqlServer(connectionString));
 
 var app = builder.Build();
 

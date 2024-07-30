@@ -1,0 +1,31 @@
+version: '3.4'
+name: recipe-book
+networks:
+  recipebookapp:
+services:
+  recipebook-db:
+    container_name: recipe-book-db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+        - 1433:1433
+    environment:
+        - ACCEPT_EULA=Y
+        - MSSQL_SA_PASSWORD=yourStrong(!)Password
+        - MSSQL_PID=Express
+    networks:
+        - recipebookapp
+  recipebook-app:
+    container_name: recipe-book-app
+    image: ${DOCKER_REGISTRY-}recipebook
+    build:
+      context: .
+      dockerfile: RecipeBook/Dockerfile
+    depends_on:
+        - recipebook-db
+    environment:
+    - DB_HOST=recipebook-db
+    - DB_NAME=RecipeBook
+    - DB_SA_PASSWORD=yourStrong(!)Password
+    networks:
+        - recipebookapp
+  
